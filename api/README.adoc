@@ -1,0 +1,6 @@
+= GiftCard Samples API
+
+The interaction with a CQRS based system is done via command and query
+objects. These replace the classic service interface listing methods to call.
+
+

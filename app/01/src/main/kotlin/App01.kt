@@ -1,15 +1,14 @@
 package io.github.jangalinski.axon.giftcard.app01
 
-import io.github.jangalinski.axon.giftcard.command.IssueCmd
-import io.github.jangalinski.axon.giftcard.command.RedeemCmd
-import io.github.jangalinski.axon.giftcard.domain.GiftCard
-import io.github.jangalinski.axon.giftcard.projection.CardSummary
+import io.github.jangalinski.axon.giftcard.api.command.IssueCmd
+import io.github.jangalinski.axon.giftcard.api.command.RedeemCmd
+//import io.github.jangalinski.axon.giftcard.eve
+import io.github.jangalinski.axon.giftcard.api.dto.CardSummary
+import io.github.jangalinski.axon.giftcard.domain.GiftCardAggregate
 import io.github.jangalinski.axon.giftcard.projection.CardSummaryProjection
-import io.github.jangalinski.axon.giftcard.query.FindAllQuery
-import io.github.jangalinski.axon.giftcard.query.FindOneQuery
+import io.github.jangalinski.axon.giftcard.api.query.FindOneQuery
 import org.axonframework.config.AggregateConfigurer
 import org.axonframework.config.DefaultConfigurer
-import org.axonframework.config.EventProcessingConfigurer
 import org.axonframework.eventhandling.GlobalSequenceTrackingToken
 import org.axonframework.eventhandling.TrackedEventMessage
 import org.axonframework.eventhandling.TrackingToken
@@ -17,9 +16,6 @@ import org.axonframework.eventsourcing.eventstore.EmbeddedEventStore
 import org.axonframework.eventsourcing.eventstore.inmemory.InMemoryEventStorageEngine
 import java.util.*
 import kotlin.streams.asSequence
-import org.axonframework.config.Configurer
-import org.axonframework.messaging.responsetypes.ResponseType
-import org.axonframework.queryhandling.QueryGateway
 
 
 val projection = CardSummaryProjection()
@@ -30,11 +26,11 @@ val eventStore = EmbeddedInMemoryEventStore()
 //.registerQueryHandler(c -> projection)
 
 val configuration = DefaultConfigurer.defaultConfiguration()
-    .eventProcessing { epc -> epc.registerEventHandler { c -> projection } }
+    .eventProcessing { epc -> epc.registerEventHandler { _ -> projection } }
     .configureAggregate(
-        AggregateConfigurer.defaultConfiguration(GiftCard::class.java)
+        AggregateConfigurer.defaultConfiguration(GiftCardAggregate::class.java)
     )
-    .registerQueryHandler{ c -> projection }
+    .registerQueryHandler { _ -> projection }
     .configureEventStore { eventStore }
     .buildConfiguration()
 
@@ -56,7 +52,7 @@ fun main() {
 
   configuration.start()
 
-  with (IssueCmd("1", 100)) {
+  with(IssueCmd("1", 100)) {
     println("send: $this")
     commandGateway.send<IssueCmd>(this)
   }
@@ -65,7 +61,7 @@ fun main() {
   println("events: ${eventStore.getEvents()}")
 
 
-  with (RedeemCmd("1", 50)) {
+  with(RedeemCmd("1", 50)) {
     println("send: $this")
     commandGateway.send<RedeemCmd>(this)
   }
@@ -75,8 +71,7 @@ fun main() {
 
   val result = queryGateway.query(FindOneQuery("1"), CardSummary::class.java)
 
-
-println("query: ${result.join()}")
+  println("query: ${result.join()}")
   configuration.shutdown()
 }
 
@@ -90,15 +85,17 @@ class EmbeddedInMemoryEventStore(
   private val events: NavigableMap<TrackingToken, TrackedEventMessage<*>> by lazy {
     val eventsField = InMemoryEventStorageEngine::class.java.getDeclaredField("events")
     eventsField.isAccessible = true
-     eventsField.get(storageEngine()) as NavigableMap<TrackingToken, TrackedEventMessage<*>>
+    eventsField.get(storageEngine()) as NavigableMap<TrackingToken, TrackedEventMessage<*>>
   }
 
-  fun getEvents() : String = events.let { it.navigableKeySet().stream()
-      .map { events[it] }
-      .map { m ->
-        String.format("\n\t[%03d] - %s",
-            (m!!.trackingToken()!! as GlobalSequenceTrackingToken).globalIndex,
-            m.payload
-        )
-      }.asSequence().joinToString ()}
+  fun getEvents(): String = events.let {
+    it.navigableKeySet().stream()
+        .map { events[it] }
+        .map { m ->
+          String.format("\n\t[%03d] - %s",
+              (m!!.trackingToken()!! as GlobalSequenceTrackingToken).globalIndex,
+              m.payload
+          )
+        }.asSequence().joinToString()
+  }
 }

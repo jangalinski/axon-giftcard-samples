@@ -1,8 +1,8 @@
 package io.github.jangalinski.axon.giftcard.domain
 
-import io.github.jangalinski.axon.giftcard.command.CancelCmd
-import io.github.jangalinski.axon.giftcard.command.IssueCmd
-import io.github.jangalinski.axon.giftcard.command.RedeemCmd
+import io.github.jangalinski.axon.giftcard.api.command.CancelCmd
+import io.github.jangalinski.axon.giftcard.api.command.IssueCmd
+import io.github.jangalinski.axon.giftcard.api.command.RedeemCmd
 import io.github.jangalinski.axon.giftcard.event.CanceledEvt
 import io.github.jangalinski.axon.giftcard.event.IssuedEvt
 import io.github.jangalinski.axon.giftcard.event.RedeemedEvt
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 import java.lang.invoke.MethodHandles
 
 
-class GiftCard {
+class GiftCardAggregate {
 
   @AggregateIdentifier
   private var id: String? = null

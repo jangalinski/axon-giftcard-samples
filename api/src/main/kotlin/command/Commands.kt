@@ -1,4 +1,4 @@
-package io.github.jangalinski.axon.giftcard.command
+package io.github.jangalinski.axon.giftcard.api.command
 
 import org.axonframework.modelling.command.TargetAggregateIdentifier
 import org.axonframework.serialization.Revision

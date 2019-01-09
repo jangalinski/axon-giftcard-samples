@@ -1,16 +1,17 @@
 package io.github.jangalinski.axon.giftcard.projection
 
+import io.github.jangalinski.axon.giftcard.api.dto.CardSummary
 import io.github.jangalinski.axon.giftcard.event.IssuedEvt
 import io.github.jangalinski.axon.giftcard.event.RedeemedEvt
-import io.github.jangalinski.axon.giftcard.query.FindAllQuery
-import io.github.jangalinski.axon.giftcard.query.FindOneQuery
+import io.github.jangalinski.axon.giftcard.api.query.FindAllQuery
+import io.github.jangalinski.axon.giftcard.api.query.FindOneQuery
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.queryhandling.QueryHandler
 
 
 class CardSummaryProjection(
     //private val queryUpdateEmitter: QueryUpdateEmitter,
-    private val cards : MutableMap<String,CardSummary> = mutableMapOf()
+    private val cards : MutableMap<String, CardSummary> = mutableMapOf()
 ) {
 
     @EventHandler
@@ -26,7 +27,7 @@ class CardSummaryProjection(
     fun on(event: RedeemedEvt) {
         println("event: $event")
 
-        cards.computeIfPresent(event.id) { _, cs -> cs.redeem(event.amount) }
+        cards.computeIfPresent(event.id) { _, cs -> CardSummary(event.id, cs.initialAmount, cs.amount - event.amount) }
 
         println("projection: $cards")
     }

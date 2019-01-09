@@ -4,7 +4,13 @@ plugins {
 }
 
 dependencies {
-    // Use the Kotlin JDK 8 standard library.
+  implementation(project(":api"))
+
+  implementation(project(":app:common:domain"))
+  implementation(project(":app:common:event"))
+  implementation(project(":app:common:projection"))
+
+  // Use the Kotlin JDK 8 standard library.
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.axonframework:axon-configuration:4.0.3")
     implementation("org.axonframework:axon-eventsourcing:4.0.3")
@@ -13,11 +19,6 @@ dependencies {
 
     implementation("org.slf4j:slf4j-simple:1.7.25")
 
-    implementation(project(":common:domain"))
-    implementation(project(":common:event"))
-    implementation(project(":common:command"))
-    implementation(project(":common:query"))
-    implementation(project(":common:projection"))
 
 }
 

@@ -1,4 +1,4 @@
-package io.github.jangalinski.axon.giftcard.query
+package io.github.jangalinski.axon.giftcard.api.query
 
 sealed class Query
 

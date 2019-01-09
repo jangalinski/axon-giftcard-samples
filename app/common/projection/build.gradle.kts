@@ -6,9 +6,11 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":common:event"))
-    implementation(project(":common:command"))
+  implementation(project(":api"))
 
+    implementation(project(":app:common:event"))
+
+    // Use the Kotlin JDK 8 standard library.
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.axonframework:axon-configuration:4.0.3")
 }
